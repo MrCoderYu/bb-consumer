@@ -1,0 +1,100 @@
+spring:
+  application:
+    name: bb-consumer
+  rocketmq:
+    name-servers: 10.21.5.107:9876
+    producer-group: bb-producer-group
+  datasource:
+    primary:
+      jdbc-url: jdbc:mysql://public-rds.cluster-cnfhvxiqw61y.ap-southeast-1.rds.amazonaws.com:3306/bb_server?socketTimeout=10000&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: admin
+      password: 0YvoGUzwhumnf2KGQvjN
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 500
+        minimum-idle: 50
+        connectionInitSql: select 1 from dual
+        connection-timeout: 5000
+        idle-timeout: 6000
+        max-lifetime: 60000
+        validation-timeout: 5000
+        initialization-fail-timeout: 1
+        keepalive-time: 60000
+    second:
+      jdbc-url: jdbc:mysql://public-rds.cluster-cnfhvxiqw61y.ap-southeast-1.rds.amazonaws.com:3306/gateway_exchange?socketTimeout=10000&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: admin
+      password: 0YvoGUzwhumnf2KGQvjN
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 500
+        minimum-idle: 50
+        connection-timeout: 5000
+        idle-timeout: 6000
+        max-lifetime: 60000
+        validation-timeout: 5000
+        initialization-fail-timeout: 1
+        keepalive-time: 60000
+  redis:
+    lettuce:
+      pool:
+        max-active: 200
+        max-idle: 50
+        max-wait: 4s
+      cluster:
+        refresh:
+          adaptive: true
+          period: 20000
+    timeout: 10s
+    cluster:
+      nodes:
+        - public-rediscluster.j6pulq.clustercfg.apse1.cache.amazonaws.com:6379
+  tracing:
+    enableTracing: false
+    reporter.zipkin.url: http://127.0.0.1:9411/api/v2/spans
+
+grpc:
+  port: 7016
+  shortcuts:
+    bb-server: 10.21.5.107:7011
+
+server:
+  port: 7015
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+bb:
+  redis-cluster:
+    shards:
+      - public-rediscluster.j6pulq.clustercfg.apse1.cache.amazonaws.com:6379
+  grpc-client:
+    list:
+      - name: bb-server
+        host: bb-server
+        port: 7011
+      - name: quote-service
+        host: quote-service
+        port: 7063
+      - name: broker-server
+        host: broker-server-5dce7b
+        port: 7023
+  location: bitbili
+
+# nacos-config
+nacos:
+  config:
+    server-addr: nacos.test.infra.be2pzzl3bhmz.tbinner.com:8848
+#    server-addr: 10.24.2.60:8848
+    data-id: ${spring.application.name}.yaml
+    group: ${spring.application.name}
+    remote-first: true  #远程配置优先
+    autoRefresh: true #自动刷新
+    bootstrap:
+      enable: true  #在spring启动前拉取配置写入environment中
+    type: yaml
+    username: nacos
+    password: nacos
+has:
+  useNewMatch: true
+  zkAddress: 10.21.5.107:2181

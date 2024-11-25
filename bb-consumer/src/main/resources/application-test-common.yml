@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: bb-consumer
+  rocketmq:
+    name-servers: toobit-mq-1:9876;toobit-mq-2:9876
+    producer-group: bb-producer-group
+  datasource:
+    primary:
+      jdbc-url: jdbc:mysql://toobit-db-bbserver:3306/bb_server?socketTimeout=10000&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: admin
+      password: 0YvoGUzwhumnf2KGQvjN
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    second:
+      jdbc-url: jdbc:mysql://toobit-db-trade:3306/gateway_exchange?socketTimeout=10000&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: admin
+      password: 0YvoGUzwhumnf2KGQvjN
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    cluster:
+      nodes:
+        - toobit-redis:6379
+  tracing:
+    enableTracing: false
+    reporter.zipkin.url: http://127.0.0.1:9411/api/v2/spans
+
+grpc:
+  port: 7016
+  shortcuts:
+    bb-server: nlb-bb-server-service:7011
+  max-channel-count-per-service: 64
+
+server:
+  port: 7015
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+bb:
+  redis-cluster:
+    shards:
+      - toobit-redis:6379
+  grpc-client:
+    list:
+      - name: bb-provider
+        host: bb-provider
+        port: 0
+  location: bitbili
+logging:
+  level:
+    io.bbex.bb: DEBUG
+
+# nacos-config
+nacos:
+  config:
+    server-addr: toobit-nacos:8848
+tbsc:
+  registry:
+    serverAddr: toobit-nacos:8848
+  consumer:
+    grpc:
+      grpc-client-channel-options:
+        max-inbound-message-size: 8388608
+        executor-config:
+          client-worker-count: 1
+          maxClientWorkerCount: 1
+          queue: 0
+has:
+  zkAddress: toobit-zk-1:2181,toobit-zk-2:2181,toobit-zk-3:2181

@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: bb-order
+  rocketmq:
+    name-servers: 10.22.4.50:9876;10.22.4.230:9876
+    producer-group: bb-producer-group
+  datasource:
+    primary:
+      jdbc-url: jdbc:mysql://ex-db-bbserver:3306/bb_server?socketTimeout=10000&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: prod_bbserver
+      password: "TB-ENC[Xb743ncnfh8mvMbOnScyRSlLcwYE5YgUKf/SZHqFlHO4dH+UvbigZbmFu9pz3fHGVkn5gqEKHZ/rILd/KwE5LvpxPjdujpjmH8U0ZhrLNo/K+l8iu1ankFqOl6NUmKgweT7mHZu4jTEQBl8Cl2VljQFhITpMT2pXY+6iAG9v1do=]"
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    second:
+      jdbc-url: jdbc:mysql://ex-db-trade:3306/gateway_exchange?socketTimeout=10000&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: prod_gateway_exchange
+      password: "TB-ENC[DydgwVJqQbEAsMQFrd73xSA5vL4HRVFiA3Bvz/GijWOxXorNywCXrCT2dNdvmQDxfL55hJhQgTg3Aqh3ZGj5qekgRTs45Pct/HsfvfUN0p01m3PaU8ZNr9Q0vn09aq79JBrm8Zcn7OBXn6YZI1QRiYwNR0euKD8U5ia7i6wDeTE=]"
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    cluster:
+      nodes:
+        - ex-redis:6379
+  tracing:
+    enableTracing: false
+    reporter.zipkin.url: http://127.0.0.1:9411/api/v2/spans
+
+grpc:
+  port: 7016
+  shortcuts:
+    bb-server: bb-server:7011
+  max-channel-count-per-service: 64
+
+server:
+  port: 7015
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+bb:
+  redis-cluster:
+    shards:
+      - ex-redis:6379
+  grpc-client:
+    list:
+      - name: bb-server
+        host: bb-server-f22d4a
+        port: 7011
+      - name: quote-service
+        host: quote-service-bdfd5d
+        port: 7063
+      - name: broker-server
+        host: broker-server-5dce7b
+        port: 7023
+      - name: common-server
+        host: bbex-common-service-72e5fb
+        port: 7220
+        use-ssl: false
+  location: bitbili
+logging:
+  level:
+    io.bbex.bb: INFO
+
+# nacos-config
+nacos:
+  config:
+    server-addr: nacos.prod.infra.be2pzzl3bhmz.tbinner.com:8848
+    username: nacos
+    password: c7crN7*ad7&GGN&l
+has:
+  zkAddress: 10.22.4.148:2181,10.22.4.170:2181,10.22.4.18:2181
